@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  api-gateway:
+    image: lawallet/api-gateway
+    container_name: api-gateway
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env.API_GATEWAY
+    environment:
+      NODE_ENV: production
+      NOSTR_RELAYS: "ws://nostream:8008"
+      URLX_URI: "http://urlx:3000"
+    depends_on:
+      nostream:
+        condition: service_healthy
+    networks:
+      - lawallet
+networks:
+  lawallet:
+    external: true
