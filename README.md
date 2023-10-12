@@ -13,14 +13,14 @@ each module and a nostr relay.
 
 0. Install [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
 1. Copy all the `.env.<name>.example` files to `.env.<name>`.
-2. Copy `resources/defaults-settings.yml` to `.nostr/settings.yml`
-3. Complete the environment variables (**INCLUDING** the `services.nostream.environment.SECRET` value in `./nostream.yml`).
+2. Copy `resources/defaults-settings.yaml` to `.nostr/settings.yaml`
+3. Complete the environment variables (**INCLUDING** the `services.nostream.environment.SECRET` value in `./nostream.yaml`).
 4. Run the following command:
 
     ```bash
-    docker-compose -f nostream.yml    \
-                   -f api-gateway.yml \
-                   -f urlx.yml        \
-                   -f ledger.yml      \
+    docker-compose -f nostream.yaml    \
+                   -f api-gateway.yaml \
+                   -f urlx.yaml        \
+                   -f ledger.yaml      \
      up -d
     ```

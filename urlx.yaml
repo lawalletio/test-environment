@@ -19,7 +19,6 @@ services:
   urlx-cache:
     image: redis:7-alpine
     container_name: urlx-cache
-    ports:
     restart: always
     ports:
       - '6379:6379'
@@ -33,4 +32,4 @@ volumes:
     driver: local
 networks:
   lawallet:
-    external: true
+    name: lawallet

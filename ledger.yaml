@@ -55,4 +55,4 @@ services:
       - lawallet
 networks:
   lawallet:
-    external: true
+    name: lawallet
