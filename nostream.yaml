@@ -17,7 +17,7 @@ services:
       DB_ACQUIRE_CONNECTION_TIMEOUT: 60000
       # Read Replica
       READ_REPLICAS: 1
-      READ_REPLICA_ENABLED: 'true'
+      READ_REPLICA_ENABLED: 'false'
       # Read Replica No. 1
       RR0_DB_HOST: db
       RR0_DB_PORT: 5432
