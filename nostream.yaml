@@ -3,7 +3,7 @@ services:
     image: lawallet/nostream
     container_name: nostream
     environment:
-      SECRET: 541647a0a3c63de7c3f36b9400c101542dfda33f0fc5ac4cc6aa279ac1601d4d159c756f36197f69d58ffe31b8926222f577ec2e5c3cd73e1bd62c5760216148df0bf072cac332dd81c697f7b1dcf2dc228c32a0da808342274332c74e58d4b67b54902385972ee9be6a7f075f48dd4322366a7b420ed97e47ea5df6d6973509
+      SECRET: ${SECRET}
       RELAY_PORT: 8008
       # Master
       NOSTR_CONFIG_DIR: /home/node/.nostr
