@@ -107,14 +107,6 @@ services:
       default:
         ipv4_address: 10.10.10.254
 
-networks:
-  default:
-    name: nostream
-    ipam:
-      driver: default
-      config:
-        - subnet: 10.10.10.0/24
-
 volumes:
   nostream-cache:
     driver: local
