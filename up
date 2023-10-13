@@ -40,3 +40,15 @@ if [[ ! -f nostream/.nostr/settings.yaml ]]; then
 else
     echo "nostream/.nostr/settings.yaml file found, skipping."
 fi
+
+
+polar_container='polar-n1-alice'
+
+if ! docker ps --format '{{.Names}}' | grep -q "${polar_container}"; then
+    echo "ERROR: container ${polar_container} not running, launch Polar and start the testing network"
+    exit 1
+fi
+
+docker network connect lawallet polar-n1-alice
+
+docker compose up
