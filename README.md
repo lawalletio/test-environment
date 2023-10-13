@@ -11,6 +11,6 @@ Quickly setup a lawallet test environment with the latest deployed images for ea
 ## Setup
 
 0. Install [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
-1. Copy the `.env.example` file `.env`.
-2. Complete the environment variables therein.
+1. Run the `./gen_env` script to generate the `.env` file with keys and secrets.
+2. Complete the missing environment variables in `.env`.
 3. Run the following command: `docker compose up`
