@@ -4,11 +4,11 @@ services:
     image: lawallet/ledger
     container_name: ledger
     env_file:
-      - ./.env.LEDGER
+      - ./.
     environment:
       NODE_ENV: production
-      DATABASE_URL: "postgresql://lawallet:lawallet@ledger-db/lawallet-extension"
-      NOSTR_RELAYS: "ws://nostream:8008"
+      DATABASE_URL: postgresql://lawallet:lawallet@ledger-db/lawallet-extension
+      NOSTR_RELAYS: ws://nostream:8008
     depends_on:
       ledger-db:
         condition: service_healthy
@@ -16,12 +16,12 @@ services:
         condition: service_completed_successfully
       nostream:
         condition: service_healthy
-    networks:
-      - lawallet
   ledger-db:
     image: postgres:15
     container_name: ledger-db
     restart: always
+    env_file:
+      - ./.env
     environment:
       DATABASE_HOST: localhost
       POSTGRES_USER: lawallet
@@ -35,24 +35,16 @@ services:
       timeout: 5s
       retries: 5
       start_period: 360s
-    networks:
-      - lawallet
   ledger-migrate:
     image: node:18-alpine3.16
     container_name: ledger-migrate
+    env_file:
+      - ./.env
     environment:
-      DATABASE_URL: "postgresql://lawallet:lawallet@ledger-db/lawallet-extension"
-    entrypoint:
-      - sh
-      - -c
-      - 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma migrate deploy'
+      DATABASE_URL: postgresql://lawallet:lawallet@ledger-db/lawallet-extension
+    entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma migrate deploy']
     volumes:
       - ./prisma:/code/prisma
     depends_on:
       ledger-db:
         condition: service_healthy
-    networks:
-      - lawallet
-networks:
-  lawallet:
-    name: lawallet

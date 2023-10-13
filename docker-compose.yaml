@@ -1,0 +1,9 @@
+include:
+  - ./api-gateway/docker-compose.yaml
+  - ./ledger/docker-compose.yaml
+  - ./nostream/docker-compose.yaml
+  - ./urlx/docker-compose.yaml
+
+networks:
+  lawallet:
+    name: lawallet

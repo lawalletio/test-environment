@@ -6,16 +6,11 @@ services:
     ports:
       - 3000:3000
     env_file:
-      - ./.env.API_GATEWAY
+      - ./.env
     environment:
       NODE_ENV: production
-      NOSTR_RELAYS: "ws://nostream:8008"
-      URLX_URI: "http://urlx:3000"
+      NOSTR_RELAYS: ws://nostream:8008
+      URLX_URI: http://urlx:3000
     depends_on:
       nostream:
         condition: service_healthy
-    networks:
-      - lawallet
-networks:
-  lawallet:
-    name: lawallet

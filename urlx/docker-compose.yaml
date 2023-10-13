@@ -4,18 +4,16 @@ services:
     image: lawallet/urlx
     container_name: urlx
     env_file:
-      - ./.env.URLX
+      - ./.env
     environment:
       NODE_ENV: production
       REDIS_URI: redis://urlx-cache:6379
-      NOSTR_RELAYS: "ws://nostream:8008"
+      NOSTR_RELAYS: ws://nostream:8008
     depends_on:
       urlx-cache:
         condition: service_started
       nostream:
         condition: service_healthy
-    networks:
-      - lawallet
   urlx-cache:
     image: redis:7-alpine
     container_name: urlx-cache
@@ -25,11 +23,6 @@ services:
     command: redis-server --save 20 1
     volumes:
       - urlx-cache:/data
-    networks:
-      - lawallet
 volumes:
   urlx-cache:
     driver: local
-networks:
-  lawallet:
-    name: lawallet

@@ -1,17 +1,5 @@
-.env.*
-!.env.*.example
-.nostr/*
-!.nostr/.gitkeep
+.*
 
-# Vim
-*.swp
-
-# Vscode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-.history/
-*.vsix
+!.env.example
+!.gitignore
+!.gitkeep
