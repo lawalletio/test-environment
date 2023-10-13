@@ -32,5 +32,11 @@ if [[ ! -f .env ]]; then
     sed -i -e "s/URLX_PUBLIC_KEY='[^']*'/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" .env
 
 else
-    echo ".env file found, exiting."
+    echo ".env file found, skipping."
+fi
+
+if [[ ! -f nostream/.nostr/settings.yaml ]]; then
+    cp nostream/.nostr/settings.example.yaml nostream/.nostr/settings.yaml
+else
+    echo "nostream/.nostr/settings.yaml file found, skipping."
 fi
