@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env -S bash
 
 generate_secret() {
     openssl rand -hex 128;
