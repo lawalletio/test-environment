@@ -2,8 +2,6 @@ services:
   nostream:
     image: lawallet/nostream
     container_name: nostream
-    env_file:
-      - ./.env
     environment:
       RELAY_PORT: 8008
       # Master
@@ -28,6 +26,8 @@ services:
       TOR_CONTROL_PORT: 9051
       TOR_PASSWORD: nostr_ts_relay
       HIDDEN_SERVICE_PORT: 80
+      # Nostream
+      SECRET: ${NOSTREAM_SECRET}
     user: node:node
     volumes:
       - .nostr:/home/node/.nostr

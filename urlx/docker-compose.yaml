@@ -3,12 +3,17 @@ services:
   urlx:
     image: lawallet/urlx
     container_name: urlx
-    env_file:
-      - ./.env
     environment:
+      MODULE_NAME: urlx
+      DEBUG: ndk:*,urlx:*
+      PORT: 3000
       NODE_ENV: production
       REDIS_URI: redis://urlx-cache:6379
       NOSTR_RELAYS: ws://nostream:8008
+      NOSTR_PRIVATE_KEY: ${URLX_PRIVATE_KEY}
+      NOSTR_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
+      LEDGER_PUBLIC_KEY: ${LEDGER_PUBLIC_KEY}
+      LNDCONNECT_URI: ${LNDCONNECT_URI}
     depends_on:
       urlx-cache:
         condition: service_started
