@@ -4,7 +4,7 @@ services:
     image: lawallet/ledger
     container_name: ledger
     env_file:
-      - ./.
+      - ./.env
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://lawallet:lawallet@ledger-db/lawallet-extension
