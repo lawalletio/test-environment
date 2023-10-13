@@ -13,7 +13,7 @@ services:
       NOSTR_RELAYS: ws://nostream:8008
       URLX_URI: http://urlx:3000
       LEDGER_PUBLIC_KEY: ${LEDGER_PUBLIC_KEY}
-      MINTER_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
+      URLX_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
     depends_on:
       nostream:
         condition: service_healthy
