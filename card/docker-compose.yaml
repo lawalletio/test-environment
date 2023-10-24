@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+  card:
+    image: lawallet/card
+    container_name: card
+    environment:
+      MODULE_NAME: card
+      DEBUG: ndk:*,card:*
+      PORT: 3000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://lawallet:lawallet@card-db/lawallet-extension
+      NOSTR_RELAYS: ws://nostream:8008
+      NOSTR_WRITE_RELAY: ws://nostream:8008
+      NOSTR_PRIVATE_KEY: ${CARD_PRIVATE_KEY}
+      NOSTR_PUBLIC_KEY: ${CARD_PUBLIC_KEY}
+
+      SERVER_AES_KEY_HEX: '00112233445566778899aabbccddeeff'
+      LAWALLET_FEDERATION_ID: 'berereQQPerkQQrererere' # 44444444-aaaa-4444-aaaa-444444444444
+      CARD_WRITER_PUBKEY: '0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff'
+      LAWALLET_API_BASE_URL: 'https://api.lawallet.ar'
+
+      PAYMENT_REQUEST_EXPIRY_IN_SECONDS: 180
+      LEDGER_PUBLIC_KEY: ${LEDGER_PUBLIC_KEY}
+      BTC_GATEWAY_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
+
+      DEFAULT_TRUSTED_MERCHANTS: '' # hexPubkey1:hexPubkey2:...:hexPubkeyN
+      DEFAULT_LIMITS: '' # name1;description1;token1;amount1;delta1:name2;description2;token2;amount2;delta2:...:nameN;descriptionN;tokenN;amountN;deltaN
+
+    depends_on:
+      card-db:
+        condition: service_healthy
+      card-migrate:
+        condition: service_completed_successfully
+      nostream:
+        condition: service_healthy
+  card-db:
+    image: postgres:15
+    container_name: card-db
+    restart: always
+    environment:
+      MODULE_NAME: card
+      DEBUG: ndk:*,card:*
+      PORT: 3000
+      DATABASE_HOST: localhost
+      POSTGRES_USER: lawallet
+      POSTGRES_PASSWORD: lawallet
+      POSTGRES_DB: lawallet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lawallet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 360s
+  card-migrate:
+    image: node:18-alpine3.16
+    container_name: card-migrate
+    environment:
+      MODULE_NAME: card
+      DEBUG: ndk:*,card:*
+      PORT: 3000
+      DATABASE_URL: postgresql://lawallet:lawallet@card-db/lawallet-extension
+    entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma migrate deploy']
+    volumes:
+      - ./prisma:/code/prisma
+    depends_on:
+      card-db:
+        condition: service_healthy

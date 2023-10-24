@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  uuid        String  @default(dbgenerated("gen_random_uuid()")) @map("uuid") @db.Uuid
+  name        String  @map("name")
+  description String  @map("description")
+  enabled     Boolean @map("is_enabled")
+
+  holderPubKey String? @map("holder_pub_key")
+  ntag424Cid   String  @map("ntag424_cid")
+
+  holder           Holder?          @relation(fields: [holderPubKey], references: [pubKey], onUpdate: NoAction, onDelete: NoAction)
+  ntag424          Ntag424          @relation(fields: [ntag424Cid], references: [cid], onUpdate: NoAction, onDelete: NoAction)
+  limits           Limit[]          @relation
+  paymentRequestss PaymentRequest[] @relation
+  payments         Payment[]        @relation
+
+  @@id([uuid])
+  @@unique([ntag424Cid])
+  @@map("cards")
+}
+
+model Holder {
+  pubKey String @map("pub_key")
+
+  cards            Card[]             @relation
+  delegations      Delegation[]       @relation
+  trustedMerchants TrustedMerchants[] @relation
+
+  @@id([pubKey])
+  @@map("holders")
+}
+
+model Delegation {
+  uuid            String   @default(dbgenerated("gen_random_uuid()")) @map("uuid") @db.Uuid
+  delegatorPubKey String   @map("delegator_pub_key")
+  since           DateTime @map("since")
+  until           DateTime @map("until")
+  conditions      String   @map("conditions")
+  delegationToken String   @map("delegation_token")
+
+  holder Holder @relation(fields: [delegatorPubKey], references: [pubKey], onUpdate: NoAction, onDelete: NoAction)
+
+  @@id([uuid])
+  @@unique([delegationToken])
+  @@map("delegations")
+}
+
+model Limit {
+  uuid        String @default(dbgenerated("gen_random_uuid()")) @map("uuid") @db.Uuid
+  name        String @map("name")
+  description String @map("description")
+  token       String @map("token") // BTC amounts are expressed in MILLISATOSHIS (1 BTC = 100000000000 mSAT = 1e11 mSAT)
+  amount      BigInt @map("amount")
+  delta       Int    @map("delta")
+
+  cardUuid String @map("card_uuid") @db.Uuid
+
+  card Card @relation(fields: [cardUuid], references: [uuid], onUpdate: NoAction, onDelete: NoAction)
+
+  @@id([uuid])
+  @@unique([cardUuid, token, delta])
+  @@map("limits")
+}
+
+model PaymentRequest {
+  uuid      String   @default(dbgenerated("gen_random_uuid()")) @map("uuid") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  response  Json     @map("response") @db.Json
+
+  cardUuid String @map("card_uuid") @db.Uuid
+
+  card Card @relation(fields: [cardUuid], references: [uuid], onUpdate: NoAction, onDelete: NoAction)
+
+  payments Payment[] @relation
+
+  @@id([uuid])
+  @@map("payment_requests")
+}
+
+model Payment {
+  uuid      String   @default(dbgenerated("gen_random_uuid()")) @map("uuid") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  status    String   @map("status")
+  token     String   @map("token") // BTC amounts are expressed in MILLISATOSHIS (1 BTC = 100000000000 mSAT = 1e11 mSAT)
+  amount    BigInt   @map("amount")
+
+  cardUuid           String @map("card_uuid") @db.Uuid
+  paymentRequestUuid String @map("payment_request_uuid") @db.Uuid
+
+  card           Card           @relation(fields: [cardUuid], references: [uuid], onUpdate: NoAction, onDelete: NoAction)
+  paymentRequest PaymentRequest @relation(fields: [paymentRequestUuid], references: [uuid], onUpdate: NoAction, onDelete: NoAction)
+
+  @@id([uuid])
+  @@map("payments")
+}
+
+model Ntag424 {
+  cid String  @map("cid")
+  k0  String  @map("k0")
+  k1  String  @map("k1")
+  k2  String  @map("k2")
+  k3  String  @map("k3")
+  k4  String  @map("k4")
+  ctr Int     @map("ctr")
+  otc String? @map("otc")
+
+  designUuid String @map("design_uuid") @db.Uuid
+
+  design Design @relation(fields: [designUuid], references: [uuid], onUpdate: NoAction, onDelete: NoAction)
+
+  card Card? @relation
+
+  @@id([cid])
+  @@map("ntag424s")
+}
+
+model Design {
+  uuid        String @default(dbgenerated("gen_random_uuid()")) @map("uuid") @db.Uuid
+  name        String @map("name")
+  description String @map("description")
+
+  ntag424 Ntag424[] @relation
+
+  @@id([uuid])
+  @@unique([name])
+  @@map("designs")
+}
+
+model Merchant {
+  pubKey      String @map("pub_key")
+  name        String @map("name")
+  description String @map("description")
+
+  trustedMerchants TrustedMerchants[] @relation
+
+  @@id([pubKey])
+  @@map("merchants")
+}
+
+model TrustedMerchants {
+  holderPubKey   String @map("holder_pub_key")
+  merchantPubKey String @map("merchant_pub_key")
+
+  holder   Holder   @relation(fields: [holderPubKey], references: [pubKey], onUpdate: NoAction, onDelete: NoAction)
+  merchant Merchant @relation(fields: [merchantPubKey], references: [pubKey], onUpdate: NoAction, onDelete: NoAction)
+
+  @@id([holderPubKey, merchantPubKey])
+  @@map("trusted_merchants")
+}
