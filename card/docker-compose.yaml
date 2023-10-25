@@ -57,9 +57,6 @@ services:
     image: node:18-alpine3.16
     container_name: card-migrate
     environment:
-      MODULE_NAME: card
-      DEBUG: ndk:*,card:*
-      PORT: 3000
       DATABASE_URL: postgresql://lawallet:lawallet@card-db/lawallet-extension
     entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma migrate deploy']
     volumes:
@@ -67,3 +64,18 @@ services:
     depends_on:
       card-db:
         condition: service_healthy
+  card-seed:
+    image: node:18-alpine3.16
+    container_name: card-seed
+    profiles:
+      - seed
+    environment:
+      DATABASE_URL: postgresql://lawallet:lawallet@card-db/lawallet-extension
+    entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma generate && npx --yes ts-node --esm -O {\"module\":\"es2020\"} prisma/seed.mts']
+    volumes:
+      - ./prisma:/code/prisma
+    depends_on:
+      card-db:
+        condition: service_healthy
+      card-migrate:
+        condition: service_completed_successfully

@@ -13,7 +13,10 @@ generate_key_pair() {
     echo "${priv_key}:${pub_key}";
 }
 
+profile='--profile=';
+
 if [[ ! -f .env ]]; then
+	profile="${profile}seed"
     cp .env.example.dev .env
 
     nostream_secret="$(generate_secret)"
@@ -57,4 +60,4 @@ fi
 
 docker network connect lawallet polar-n1-alice
 
-docker compose up
+docker compose "${profile}" up

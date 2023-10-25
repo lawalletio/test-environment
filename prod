@@ -13,7 +13,10 @@ generate_key_pair() {
     echo "${priv_key}:${pub_key}";
 }
 
+profile='--profile=';
+
 if [[ ! -f .env ]]; then
+	profile="${profile}seed"
     cp .env.example.prod .env
 
     nostream_secret="$(generate_secret)"
@@ -47,4 +50,4 @@ else
     echo "nostream/.nostr/settings.yaml file found, skipping."
 fi
 
-docker compose up
+docker compose "${profile}" up
