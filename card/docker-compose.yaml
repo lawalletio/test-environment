@@ -3,6 +3,8 @@ services:
   card:
     image: lawallet/card
     container_name: card
+    ports:
+      - 3001:3000
     environment:
       MODULE_NAME: card
       DEBUG: ndk:*,card:*
