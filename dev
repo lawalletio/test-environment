@@ -1,0 +1,60 @@
+#! /usr/bin/env -S bash
+
+generate_secret() {
+    openssl rand -hex 128;
+}
+
+generate_key_pair() {
+    key_data="$(openssl ec -in <(openssl ecparam -name secp256k1 -genkey) -text -noout -conv_form=compressed 2> /dev/null | grep '^ ')";
+
+    priv_key="$(head -n3 <(echo "${key_data}") | tr -cd 0123456789abcdef)";
+    pub_key="$(tail -n3 <(echo "${key_data}") | tr -cd 0123456789abcdef | tail -c+3)";
+
+    echo "${priv_key}:${pub_key}";
+}
+
+if [[ ! -f .env ]]; then
+    cp .env.example.dev .env
+
+    nostream_secret="$(generate_secret)"
+    sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" .env
+
+    ledger_key_pair="$(generate_key_pair)"
+    ledger_pub_key="${ledger_key_pair#*:}"
+    ledger_priv_key="${ledger_key_pair%:*}"
+    sed -i -e "s/LEDGER_PRIVATE_KEY=''/LEDGER_PRIVATE_KEY='${ledger_priv_key}'/g" .env
+    sed -i -e "s/LEDGER_PUBLIC_KEY=''/LEDGER_PUBLIC_KEY='${ledger_pub_key}'/g" .env
+
+    urlx_key_pair="$(generate_key_pair)"
+    urlx_pub_key="${urlx_key_pair#*:}"
+    urlx_priv_key="${urlx_key_pair%:*}"
+    sed -i -e "s/URLX_PRIVATE_KEY=''/URLX_PRIVATE_KEY='${urlx_priv_key}'/g" .env
+    sed -i -e "s/URLX_PUBLIC_KEY=''/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" .env
+
+    card_key_pair="$(generate_key_pair)"
+    card_pub_key="${card_key_pair#*:}"
+    card_priv_key="${card_key_pair%:*}"
+    sed -i -e "s/CARD_PRIVATE_KEY=''/CARD_PRIVATE_KEY='${card_priv_key}'/g" .env
+    sed -i -e "s/CARD_PUBLIC_KEY=''/CARD_PUBLIC_KEY='${card_pub_key}'/g" .env
+
+else
+    echo ".env file found, skipping."
+fi
+
+if [[ ! -f nostream/.nostr/settings.yaml ]]; then
+    cp nostream/.nostr/settings.example.yaml nostream/.nostr/settings.yaml
+else
+    echo "nostream/.nostr/settings.yaml file found, skipping."
+fi
+
+
+polar_container='polar-n1-alice'
+
+if ! docker ps --format '{{.Names}}' | grep -q "${polar_container}"; then
+    echo "ERROR: container ${polar_container} not running, launch Polar and start the testing network"
+    exit 1
+fi
+
+docker network connect lawallet polar-n1-alice
+
+docker compose up

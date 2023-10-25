@@ -14,28 +14,28 @@ generate_key_pair() {
 }
 
 if [[ ! -f .env ]]; then
-    cp .env.example .env
+    cp .env.example.prod .env
 
     nostream_secret="$(generate_secret)"
-    sed -i -e "s/NOSTREAM_SECRET='[^']*'/NOSTREAM_SECRET='${nostream_secret}'/g" .env
+    sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" .env
 
     ledger_key_pair="$(generate_key_pair)"
     ledger_pub_key="${ledger_key_pair#*:}"
     ledger_priv_key="${ledger_key_pair%:*}"
-    sed -i -e "s/LEDGER_PRIVATE_KEY='[^']*'/LEDGER_PRIVATE_KEY='${ledger_priv_key}'/g" .env
-    sed -i -e "s/LEDGER_PUBLIC_KEY='[^']*'/LEDGER_PUBLIC_KEY='${ledger_pub_key}'/g" .env
+    sed -i -e "s/LEDGER_PRIVATE_KEY=''/LEDGER_PRIVATE_KEY='${ledger_priv_key}'/g" .env
+    sed -i -e "s/LEDGER_PUBLIC_KEY=''/LEDGER_PUBLIC_KEY='${ledger_pub_key}'/g" .env
 
     urlx_key_pair="$(generate_key_pair)"
     urlx_pub_key="${urlx_key_pair#*:}"
     urlx_priv_key="${urlx_key_pair%:*}"
-    sed -i -e "s/URLX_PRIVATE_KEY='[^']*'/URLX_PRIVATE_KEY='${urlx_priv_key}'/g" .env
-    sed -i -e "s/URLX_PUBLIC_KEY='[^']*'/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" .env
+    sed -i -e "s/URLX_PRIVATE_KEY=''/URLX_PRIVATE_KEY='${urlx_priv_key}'/g" .env
+    sed -i -e "s/URLX_PUBLIC_KEY=''/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" .env
 
     card_key_pair="$(generate_key_pair)"
     card_pub_key="${card_key_pair#*:}"
     card_priv_key="${card_key_pair%:*}"
-    sed -i -e "s/CARD_PRIVATE_KEY='[^']*'/CARD_PRIVATE_KEY='${card_priv_key}'/g" .env
-    sed -i -e "s/CARD_PUBLIC_KEY='[^']*'/CARD_PUBLIC_KEY='${card_pub_key}'/g" .env
+    sed -i -e "s/CARD_PRIVATE_KEY=''/CARD_PRIVATE_KEY='${card_priv_key}'/g" .env
+    sed -i -e "s/CARD_PUBLIC_KEY=''/CARD_PUBLIC_KEY='${card_pub_key}'/g" .env
 
 else
     echo ".env file found, skipping."
@@ -46,15 +46,5 @@ if [[ ! -f nostream/.nostr/settings.yaml ]]; then
 else
     echo "nostream/.nostr/settings.yaml file found, skipping."
 fi
-
-
-polar_container='polar-n1-alice'
-
-if ! docker ps --format '{{.Names}}' | grep -q "${polar_container}"; then
-    echo "ERROR: container ${polar_container} not running, launch Polar and start the testing network"
-    exit 1
-fi
-
-docker network connect lawallet polar-n1-alice
 
 docker compose up

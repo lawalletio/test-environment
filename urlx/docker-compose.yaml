@@ -14,7 +14,7 @@ services:
       NOSTR_PRIVATE_KEY: ${URLX_PRIVATE_KEY}
       NOSTR_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
       LEDGER_PUBLIC_KEY: ${LEDGER_PUBLIC_KEY}
-      LNDCONNECT_URI: ${URLX_LNDCONNECT_URI}
+      LNDCONNECT_URI: ${LNDCONNECT_URI}
     depends_on:
       urlx-cache:
         condition: service_started
