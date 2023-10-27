@@ -3,6 +3,8 @@ services:
   urlx:
     image: lawallet/urlx
     container_name: urlx
+    ports:
+      - 3002:3000
     environment:
       MODULE_NAME: urlx
       DEBUG: ndk:*,urlx:*
