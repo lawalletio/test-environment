@@ -10,8 +10,8 @@ network:
 limits:
   client:
     subscription:
-      maxSubscriptions: 10
-      maxFilters: 10
+      maxSubscriptions: 100
+      maxFilters: 100
       maxFilterValues: 2500
       maxSubscriptionIdLength: 256
       maxLimit: 5000
