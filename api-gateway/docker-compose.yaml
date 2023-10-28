@@ -3,6 +3,7 @@ services:
   api-gateway:
     image: lawallet/api-gateway
     container_name: api-gateway
+    restart: always
     ports:
       - 3000:3000
     environment:

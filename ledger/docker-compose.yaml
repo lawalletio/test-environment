@@ -3,6 +3,7 @@ services:
   ledger:
     image: lawallet/ledger
     container_name: ledger
+    restart: always
     environment:
       MODULE_NAME: ledger
       DEBUG: ndk:*,ledger:*
