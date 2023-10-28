@@ -19,7 +19,7 @@ services:
       LNBITS_ADMIN_KEY: ${LNBITS_ADMIN_KEY}
       LNBITS_INVOICE_READ_KEY: ${LNBITS_INVOICE_READ_KEY}
       LNBITS_ENDPOINT: ${LNBITS_ENDPOINT}
-      LNDCONNECT_URI: ${LNDCONNECT_URI}
+      LNURLP_URI: ${LNURLP_URI}
     depends_on:
       urlx-cache:
         condition: service_started

@@ -36,7 +36,7 @@ When you're done testing, you may stop all the instances with `Ctrl+C`, and dock
 
 ## Setup (for Production)
 
-Edit the `.env.example.prod` file and set up the `LNDCONNECT_URI` to point to the LND to use, now simply run the `./prod` script to generate the `.env` file with keys and secrets, and launch the testing environment proper.
+Edit the `.env.example.prod` file and set up the `LNURLP_URI` to point to the LNBits LNURLp exrtension to use, now simply run the `./prod` script to generate the `.env` file with keys and secrets, and launch the testing environment proper.
 
 This will start the docker instances and show the ongoing logs.
 When you're done testing, you may stop all the instances with `Ctrl+C`, and docker will stop all the containers for you.
