@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   urlx:
+    build: https://github.com/lawalletio/urlx.git
     image: lawallet/urlx
     container_name: urlx
     restart: always

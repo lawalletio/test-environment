@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   ledger:
+    build: https://github.com/lawalletio/ledger.git
     image: lawallet/ledger
     container_name: ledger
     restart: always

@@ -1,5 +1,7 @@
 #! /usr/bin/env -S bash
 
+set -euo pipefail
+
 generate_secret() {
     openssl rand -hex 128;
 }

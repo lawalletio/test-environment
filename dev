@@ -1,5 +1,7 @@
 #! /usr/bin/env -S bash
 
+set -euo pipefail
+
 generate_secret() {
     openssl rand -hex 128;
 }
@@ -12,6 +14,8 @@ generate_key_pair() {
 
     echo "${priv_key}:${pub_key}";
 }
+
+COMPOSE_PARALLEL_LIMIT=1 docker compose build
 
 if [[ ! -f .env ]]; then
     cp .env.example.dev .env

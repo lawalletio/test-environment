@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   api-gateway:
+    build: https://github.com/lawalletio/api-gateway.git
     image: lawallet/api-gateway
     container_name: api-gateway
     restart: always

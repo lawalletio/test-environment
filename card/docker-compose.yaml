@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   card:
+    build: https://github.com/lawalletio/card.git
     image: lawallet/card
     container_name: card
     restart: always
