@@ -57,6 +57,7 @@ if ! docker ps --format '{{.Names}}' | grep -q "${polar_container}"; then
     exit 1
 fi
 
+docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet
 docker network connect lawallet polar-n1-alice
 
 if [[ ! -f .seeded ]]; then

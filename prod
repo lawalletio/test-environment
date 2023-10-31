@@ -48,6 +48,8 @@ else
     echo "nostream/.nostr/settings.yaml file found, skipping."
 fi
 
+docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet
+
 if [[ ! -f .seeded ]]; then
     touch .seeded
     docker compose --profile seed up
