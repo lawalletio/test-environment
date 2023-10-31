@@ -48,7 +48,9 @@ else
     echo "nostream/.nostr/settings.yaml file found, skipping."
 fi
 
-docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet
+if ! docker network ls --format '{{.Name}}' | grep -q '^lawallet$'; then
+    docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet
+fi
 
 if [[ ! -f .seeded ]]; then
     touch .seeded

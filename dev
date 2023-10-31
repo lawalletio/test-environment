@@ -15,13 +15,13 @@ generate_key_pair() {
     echo "${priv_key}:${pub_key}";
 }
 
-COMPOSE_PARALLEL_LIMIT=1 docker compose build
-
 if [[ ! -f .env ]]; then
     cp .env.example.dev .env
 else
     echo ".env file found, skipping."
 fi
+
+COMPOSE_PARALLEL_LIMIT=1 docker compose build
 
 nostream_secret="$(generate_secret)"
 sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" .env
@@ -57,8 +57,13 @@ if ! docker ps --format '{{.Names}}' | grep -q "${polar_container}"; then
     exit 1
 fi
 
-docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet
-docker network connect lawallet polar-n1-alice
+if ! docker network ls --format '{{.Name}}' | grep -q '^lawallet$'; then
+    docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet
+fi
+if ! docker network inspect --format '{{range $k, $v := .Containers}}{{ print $v.Name }}{{ end }}' lawallet | grep -q '^polar-n1-alice$'; then
+    docker network connect lawallet polar-n1-alice
+    trap 'docker network disconnect lawallet polar-n1-alice' ERR
+fi
 
 if [[ ! -f .seeded ]]; then
     touch .seeded
@@ -66,3 +71,5 @@ if [[ ! -f .seeded ]]; then
 else
     docker compose up
 fi
+
+docker network disconnect lawallet polar-n1-alice

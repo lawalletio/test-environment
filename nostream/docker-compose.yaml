@@ -103,9 +103,6 @@ services:
     depends_on:
       nostream-db:
         condition: service_healthy
-    networks:
-      default:
-        ipv4_address: 10.10.10.254
 
 volumes:
   nostream-cache:
