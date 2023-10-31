@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  monitor:
+    build: https://github.com/lawalletio/monitor.git
+    image: lawallet/monitor
+    container_name: monitor
+    restart: always
+    environment:
+      MODULE_NAME: monitor
+      NODE_ENV: production
+      NOSTR_RELAY: ws://nostream:8008
+    depends_on:
+      nostream:
+        condition: service_healthy

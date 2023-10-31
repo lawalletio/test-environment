@@ -2,5 +2,6 @@ include:
   - ./api-gateway/docker-compose.yaml
   - ./card/docker-compose.yaml
   - ./ledger/docker-compose.yaml
+  - ./monitor/docker-compose.yaml
   - ./nostream/docker-compose.yaml
   - ./urlx/docker-compose.yaml
