@@ -2,6 +2,8 @@ version: "3.8"
 services:
   lnbits:
     build: https://github.com/lnbits/lnbits.git
+    image: lawallet/lnbits
+    container_name: lnbits
     restart: on-failure
     environment:
     - LNBITS_ADMIN_KEY=${LNBITS_ADMIN_KEY}
