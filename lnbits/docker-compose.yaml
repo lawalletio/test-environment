@@ -12,5 +12,8 @@ services:
     - LNURLP_URI=${LNURLP_URI}
     volumes:
       - ./data:/app/data
+      - ../polar/auth:/auth:ro
     ports:
       - 5000:5000
+    networks:
+      - default
