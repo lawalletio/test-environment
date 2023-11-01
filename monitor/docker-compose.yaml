@@ -5,10 +5,14 @@ services:
     image: lawallet/monitor
     container_name: monitor
     restart: always
+    ports:
+      - 3002:3000
     environment:
       MODULE_NAME: monitor
       NODE_ENV: production
       NOSTR_RELAY: ws://nostream:8008
+      PORT: 3000
+      GATEWAY_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
     depends_on:
       nostream:
         condition: service_healthy
