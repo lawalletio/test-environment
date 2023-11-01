@@ -6,10 +6,36 @@ services:
     container_name: lnbits
     restart: on-failure
     environment:
-    - LNBITS_ADMIN_KEY=${LNBITS_ADMIN_KEY}
-    - LNBITS_INVOICE_READ_KEY=${LNBITS_INVOICE_READ_KEY}
-    - LNBITS_ENDPOINT=${LNBITS_ENDPOINT}
-    - LNURLP_URI=${LNURLP_URI}
+      HOST: lnbits.lawallet.local
+      PORT: 5000
+      ENABLE_LOG_TO_FILE: false
+      LNBITS_FORCE_HTTPS: false
+      LNBITS_RATE_LIMIT_NO: 2000
+      LNBITS_RATE_LIMIT_UNIT: minute
+      LNBITS_ALLOWED_IPS: ""
+      LNBITS_BLOCKED_IPS: ""
+      LNBITS_ALLOWED_USERS: ""
+      LNBITS_ADMIN_USERS: ""
+      LNBITS_ADMIN_EXTENSIONS: admin, ngrok
+      LNBITS_ALLOW_NEW_ACCOUNTS: false
+      LNBITS_ADMIN_UI: false
+      LNBITS_NODE_UI: false
+      LNBITS_PUBLIC_NODE_UI: false
+      LNBITS_NODE_UI_TRANSACTIONS: false
+      LNBITS_DEFAULT_WALLET_NAME: LaWallet
+      LNBITS_HIDE_API: false
+      LNBITS_EXTENSIONS_PATH: ./data
+      LNBITS_EXTENSIONS_DEFAULT_INSTALL: lnurlp
+      LNBITS_DATA_FOLDER: ./data
+      LNBITS_SERVICE_FEE: 0.0
+      LNBITS_RESERVE_FEE_MIN: 2000
+      LNBITS_RESERVE_FEE_PERCENT: 1.0
+      LNBITS_ALLOWED_FUNDING_SOURCES: LndRestWallet
+      LNBITS_BACKEND_WALLET_CLASS: LndRestWallet
+      LIGHTNING_INVOICE_EXPIRY: 3600
+      LND_REST_ENDPOINT: https://polar-n1-alice:8080/
+      LND_REST_CERT: /auth/tls.cert
+      LND_REST_MACAROON: /auth/admin.macaroon
     volumes:
       - ./data:/app/data
       - ../polar/auth:/auth:ro
