@@ -103,6 +103,8 @@ services:
     depends_on:
       nostream-db:
         condition: service_healthy
+    networks:
+      - default
 
 volumes:
   nostream-cache:
