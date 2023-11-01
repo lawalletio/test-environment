@@ -1,0 +1,42 @@
+2023-11-01 14:18:46.97 | INFO | Started server process [11]
+2023-11-01 14:18:46.97 | INFO | Waiting for application startup.
+2023-11-01 14:18:46.98 | DEBUG | running migration core.1
+2023-11-01 14:18:46.99 | DEBUG | running migration core.2
+2023-11-01 14:18:46.99 | DEBUG | running migration core.3
+2023-11-01 14:18:46.99 | DEBUG | running migration core.4
+2023-11-01 14:18:46.99 | DEBUG | running migration core.5
+2023-11-01 14:18:46.99 | DEBUG | running migration core.6
+2023-11-01 14:18:46.99 | DEBUG | running migration core.7
+2023-11-01 14:18:46.99 | DEBUG | running migration core.8
+2023-11-01 14:18:46.99 | DEBUG | running migration core.9
+2023-11-01 14:18:46.99 | DEBUG | running migration core.10
+2023-11-01 14:18:46.99 | DEBUG | running migration core.11
+2023-11-01 14:18:46.99 | DEBUG | running migration core.12
+2023-11-01 14:18:46.99 | DEBUG | running migration core.13
+2023-11-01 14:18:46.99 | DEBUG | running migration core.14
+2023-11-01 14:18:46.99 | DEBUG | running migration core.15
+2023-11-01 14:18:47.00 | INFO | ✔️ All migrations done.
+2023-11-01 14:18:47.00 | INFO | Initialized webpush settings with generated VAPID key pair.
+2023-11-01 14:18:47.00 | INFO | Pubkey: BJ27KrZBqrUiFDaf_AmdwMrz7bcsgPojjVcFdpXsYS5zXqQQP8stVOvd7J5uY_TCwWV4y45RtRCmViX3tLeG2Tw
+2023-11-01 14:18:47.00 | INFO | Starting LNbits
+2023-11-01 14:18:47.00 | INFO | Version: 0.11.2
+2023-11-01 14:18:47.00 | INFO | Baseurl: http://127.0.0.1:5000/
+2023-11-01 14:18:47.00 | INFO | Host: 0.0.0.0
+2023-11-01 14:18:47.00 | INFO | Port: 5000
+2023-11-01 14:18:47.00 | INFO | Debug: False
+2023-11-01 14:18:47.00 | INFO | Site title: LNbits
+2023-11-01 14:18:47.00 | INFO | Funding source: VoidWallet
+2023-11-01 14:18:47.00 | INFO | Data folder: ./data
+2023-11-01 14:18:47.00 | INFO | Database: SQLite
+2023-11-01 14:18:47.00 | INFO | Service fee: 0.0
+2023-11-01 14:18:47.00 | WARNING | This backend does nothing, it is here just as a placeholder, you must configure an actual backend before being able to do anything useful with LNbits.
+2023-11-01 14:18:47.00 | INFO | ✔️ Backend VoidWallet connected and with a balance of 0 msat.
+2023-11-01 14:18:47.01 | INFO | Installed Extensions (0):
+2023-11-01 14:18:47.01 | DEBUG | Starting killswitch task
+2023-11-01 14:18:47.01 | INFO | Task: checking all pending payments (incoming=True, outgoing=True) of last 15 days
+2023-11-01 14:18:47.01 | INFO | > got a payment notification
+2023-11-01 14:18:47.01 | INFO | Application startup complete.
+2023-11-01 14:18:47.01 | INFO | Uvicorn running on http://0.0.0.0:5000 (Press CTRL+C to quit)
+2023-11-01 14:18:47.01 | INFO | Task: pending check finished for 0 payments (took 0.002 s)
+2023-11-01 14:18:47.01 | DEBUG | Task: deleting all expired invoices
+2023-11-01 14:18:47.01 | INFO | Task: expired invoice deletion finished (took 0.002 s)

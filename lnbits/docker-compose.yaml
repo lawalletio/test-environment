@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  lnbits:
+    build: https://github.com/lnbits/lnbits.git
+    restart: on-failure
+    environment:
+    - LNBITS_ADMIN_KEY=${LNBITS_ADMIN_KEY}
+    - LNBITS_INVOICE_READ_KEY=${LNBITS_INVOICE_READ_KEY}
+    - LNBITS_ENDPOINT=${LNBITS_ENDPOINT}
+    - LNURLP_URI=${LNURLP_URI}
+    volumes:
+      - ./data:/app/data
+    ports:
+      - 5000:5000

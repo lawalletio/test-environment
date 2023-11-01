@@ -5,3 +5,4 @@ include:
   - ./monitor/docker-compose.yaml
   - ./nostream/docker-compose.yaml
   - ./urlx/docker-compose.yaml
+  - ./lnbits/docker-compose.yaml
