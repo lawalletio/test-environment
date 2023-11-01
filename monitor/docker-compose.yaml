@@ -6,7 +6,7 @@ services:
     container_name: monitor
     restart: always
     ports:
-      - 3002:3000
+      - 3003:3000
     environment:
       MODULE_NAME: monitor
       NODE_ENV: production
@@ -16,3 +16,5 @@ services:
     depends_on:
       nostream:
         condition: service_healthy
+    networks:
+      - default

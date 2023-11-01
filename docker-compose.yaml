@@ -6,3 +6,8 @@ include:
   - ./nostream/docker-compose.yaml
   - ./urlx/docker-compose.yaml
   - ./lnbits/docker-compose.yaml
+
+networks:
+  default:
+    name: lawallet
+    external: true
