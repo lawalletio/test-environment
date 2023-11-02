@@ -27,8 +27,8 @@ services:
       LEDGER_PUBLIC_KEY: ${LEDGER_PUBLIC_KEY}
       BTC_GATEWAY_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
 
-      DEFAULT_TRUSTED_MERCHANTS: '' # hexPubkey1:hexPubkey2:...:hexPubkeyN
-      DEFAULT_LIMITS: '' # name1;description1;token1;amount1;delta1:name2;description2;token2;amount2;delta2:...:nameN;descriptionN;tokenN;amountN;deltaN
+      DEFAULT_TRUSTED_MERCHANTS: ''  # hexPubkey1:hexPubkey2:...:hexPubkeyN
+      DEFAULT_LIMITS: 'default;1BTC/hour;BTC;100000000000;3600'  # name1;description1;token1;amount1;delta1:name2;description2;token2;amount2;delta2:...:nameN;descriptionN;tokenN;amountN;deltaN
 
     depends_on:
       card-db:
