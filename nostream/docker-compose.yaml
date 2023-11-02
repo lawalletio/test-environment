@@ -93,10 +93,7 @@ services:
       DB_USER: nostr_ts_relay
       DB_PASSWORD: nostr_ts_relay
       DB_NAME: nostr_ts_relay
-    entrypoint:
-      - sh
-      - -c
-      - 'cd code && npm install --no-save --quiet knex@2.4.0 pg@8.8.0 && npx knex migrate:latest'
+    entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet knex@2.4.0 pg@8.8.0 && npx knex migrate:latest' ]
     volumes:
       - ${NOSTREAM_DOCKER_BASE}/migrations:/code/migrations:ro
       - ${NOSTREAM_DOCKER_BASE}/knexfile.js:/code/knexfile.js
