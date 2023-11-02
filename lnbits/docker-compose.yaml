@@ -6,7 +6,7 @@ services:
     container_name: lnbits
     restart: on-failure
     environment:
-      HOST: lnbits.lawallet.local
+      HOST: lnbits.lawallet.ar
       PORT: 5000
       FORWARDED_ALLOW_IPS: "*"
       ENABLE_LOG_TO_FILE: false
