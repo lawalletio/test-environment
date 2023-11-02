@@ -38,8 +38,7 @@ generate_key_pair() {
 
 #######################################################################################################################
 
-echo "We need to validate your sudo credentials, these will be used for hosts file shadow mounting...";
-if ! sudo -v; then
+if ! sudo -p 'We need to validate your sudo credentials, these will be used for hosts file shadow mounting, password for %u: ' -v; then
     echo "Credential validation failed, please re-run script.";
     exit 1;
 fi;
