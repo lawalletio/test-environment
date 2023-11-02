@@ -1,6 +1,27 @@
 #! /usr/bin/env -S bash
 
-set -euo pipefail
+set -euo pipefail;
+shopt -qs huponexit;
+
+TRAPS=();
+# shellcheck disable=SC2154
+trap 'for t in "${TRAPS[@]}"; do eval "${t}"; done;' EXIT;
+
+#######################################################################################################################
+
+HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)";
+
+export API_GATEWAY_DOCKER_BASE="${HERE}/api-gateway";
+export CARD_DOCKER_BASE="${HERE}/card";
+export LEDGER_DOCKER_BASE="${HERE}/ledger";
+export LNBITS_DOCKER_BASE="${HERE}/lnbits";
+export MONITOR_DOCKER_BASE="${HERE}/monitor";
+export NOSTREAM_DOCKER_BASE="${HERE}/nostream";
+export POLAR_DOCKER_BASE="${HERE}/polar";
+export PROXY_DOCKER_BASE="${HERE}/proxy";
+export URLX_DOCKER_BASE="${HERE}/urlx";
+
+#######################################################################################################################
 
 generate_secret() {
     openssl rand -hex 128;
@@ -15,61 +36,121 @@ generate_key_pair() {
     echo "${priv_key}:${pub_key}";
 }
 
-if [[ ! -f .env ]]; then
-    cp .env.example.dev .env
+#######################################################################################################################
+
+echo "We need to validate your sudo credentials, these will be used for hosts file shadow mounting...";
+if ! sudo -v; then
+    echo "Credential validation failed, please re-run script.";
+    exit 1;
+fi;
+echo "Credential validation successful, continuing.";
+
+while sleep 1; do sudo -v; done &
+
+#######################################################################################################################
+
+if [[ ! -f "${HERE}/.env" ]]; then
+    cp "${HERE}/.env.example.dev" "${HERE}/.env";
 else
-    echo ".env file found, skipping."
-fi
+    echo ".env file found, skipping.";
+fi;
 
-COMPOSE_PARALLEL_LIMIT=1 docker compose build
+COMPOSE_PARALLEL_LIMIT=1 docker compose     \
+    -f "${HERE}/docker-compose.yaml"        \
+    -f "${HERE}/lnbits/docker-compose.yaml" \
+    -f "${HERE}/proxy/docker-compose.yaml"  \
+    build;
 
-nostream_secret="$(generate_secret)"
-sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" .env
+#######################################################################################################################
 
-ledger_key_pair="$(generate_key_pair)"
-ledger_pub_key="${ledger_key_pair#*:}"
-ledger_priv_key="${ledger_key_pair%:*}"
-sed -i -e "s/LEDGER_PRIVATE_KEY=''/LEDGER_PRIVATE_KEY='${ledger_priv_key}'/g" .env
-sed -i -e "s/LEDGER_PUBLIC_KEY=''/LEDGER_PUBLIC_KEY='${ledger_pub_key}'/g" .env
+nostream_secret="$(generate_secret)";
+sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" "${HERE}/.env";
 
-urlx_key_pair="$(generate_key_pair)"
-urlx_pub_key="${urlx_key_pair#*:}"
-urlx_priv_key="${urlx_key_pair%:*}"
-sed -i -e "s/URLX_PRIVATE_KEY=''/URLX_PRIVATE_KEY='${urlx_priv_key}'/g" .env
-sed -i -e "s/URLX_PUBLIC_KEY=''/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" .env
+ledger_key_pair="$(generate_key_pair)";
+ledger_pub_key="${ledger_key_pair#*:}";
+ledger_priv_key="${ledger_key_pair%:*}";
+sed -i -e "s/LEDGER_PRIVATE_KEY=''/LEDGER_PRIVATE_KEY='${ledger_priv_key}'/g" "${HERE}/.env";
+sed -i -e "s/LEDGER_PUBLIC_KEY=''/LEDGER_PUBLIC_KEY='${ledger_pub_key}'/g" "${HERE}/.env";
 
-card_key_pair="$(generate_key_pair)"
-card_pub_key="${card_key_pair#*:}"
-card_priv_key="${card_key_pair%:*}"
-sed -i -e "s/CARD_PRIVATE_KEY=''/CARD_PRIVATE_KEY='${card_priv_key}'/g" .env
-sed -i -e "s/CARD_PUBLIC_KEY=''/CARD_PUBLIC_KEY='${card_pub_key}'/g" .env
+urlx_key_pair="$(generate_key_pair)";
+urlx_pub_key="${urlx_key_pair#*:}";
+urlx_priv_key="${urlx_key_pair%:*}";
+sed -i -e "s/URLX_PRIVATE_KEY=''/URLX_PRIVATE_KEY='${urlx_priv_key}'/g" "${HERE}/.env";
+sed -i -e "s/URLX_PUBLIC_KEY=''/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" "${HERE}/.env";
 
-if [[ ! -f nostream/.nostr/settings.yaml ]]; then
-    cp nostream/.nostr/settings.example.yaml nostream/.nostr/settings.yaml
+card_key_pair="$(generate_key_pair)";
+card_pub_key="${card_key_pair#*:}";
+card_priv_key="${card_key_pair%:*}";
+sed -i -e "s/CARD_PRIVATE_KEY=''/CARD_PRIVATE_KEY='${card_priv_key}'/g" "${HERE}/.env";
+sed -i -e "s/CARD_PUBLIC_KEY=''/CARD_PUBLIC_KEY='${card_pub_key}'/g" "${HERE}/.env";
+
+#######################################################################################################################
+
+if [[ ! -f "${HERE}/nostream/.nostr/settings.yaml" ]]; then
+    cp "${HERE}/nostream/.nostr/settings.example.yaml" "${HERE}/nostream/.nostr/settings.yaml";
 else
-    echo "nostream/.nostr/settings.yaml file found, skipping."
-fi
+    echo "nostream/.nostr/settings.yaml file found, skipping.";
+fi;
 
-polar_container='polar-n1-alice'
+#######################################################################################################################
+
+if [[ ! -f "${HERE}/lnbits/data" ]]; then
+    cp -r "${HERE}/lnbits/data.example" "${HERE}/lnbits/data";
+else
+    echo "lnbits/data already exists, skipping.";
+fi;
+
+#######################################################################################################################
+
+polar_container='polar-n1-alice';
 
 if ! docker ps --format '{{.Names}}' | grep -q "${polar_container}"; then
-    echo "ERROR: container ${polar_container} not running, launch Polar and start the testing network"
-    exit 1
-fi
+    echo "ERROR: container ${polar_container} not running, launch Polar and start the testing network";
+    exit 1;
+fi;
+
+#######################################################################################################################
 
 if ! docker network ls --format '{{.Name}}' | grep -q '^lawallet$'; then
-    docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet
-fi
+    docker network create --subnet '10.10.10.0/24' --gateway '10.10.10.1' lawallet;
+fi;
 if ! docker network inspect --format '{{range $k, $v := .Containers}}{{ print $v.Name }}{{ end }}' lawallet | grep -q '^polar-n1-alice$'; then
-    docker network connect lawallet polar-n1-alice
-    trap 'docker network disconnect lawallet polar-n1-alice' ERR
-fi
+    docker network connect lawallet "${polar_container}";
+    TRAPS=("docker network disconnect lawallet ${polar_container}" "${TRAPS[@]}");
+fi;
 
-if [[ ! -f .seeded ]]; then
-    touch .seeded
-    docker compose --profile seed up
+#######################################################################################################################
+
+HOSTS="$(mktemp --tmpdir lawallet-XXXXXXXX)";
+{
+    cat /etc/hosts;
+    echo '';
+    echo '### LaWallet ###';
+    echo '127.0.0.1 api.lawallet.local';
+    echo '127.0.0.1 lnbits.lawallet.local';
+    echo '127.0.0.1 relay.lawallet.local';
+} > "${HOSTS}";
+sudo mount --bind "${HOSTS}" /etc/hosts;
+TRAPS=('sudo umount -f /etc/hosts' "${TRAPS[@]}");
+
+#######################################################################################################################
+
+if [[ ! -f "${HERE}/.seeded" ]]; then
+    touch "${HERE}/.seeded";
+    docker compose                              \
+        --profile seed                          \
+        -f "${HERE}/docker-compose.yaml"        \
+        -f "${HERE}/lnbits/docker-compose.yaml" \
+        -f "${HERE}/proxy/docker-compose.yaml"  \
+        up;
 else
-    docker compose up
-fi
+    docker compose                              \
+        -f "${HERE}/docker-compose.yaml"        \
+        -f "${HERE}/lnbits/docker-compose.yaml" \
+        -f "${HERE}/proxy/docker-compose.yaml"  \
+        up;
+fi;
 
-docker network disconnect lawallet polar-n1-alice
+#
+# mkcert -install               <--- esto lo tiene que hacer al instalar... capaz se puede poner aca de una
+#

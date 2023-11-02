@@ -37,8 +37,8 @@ services:
       LND_REST_CERT: /auth/tls.cert
       LND_REST_MACAROON: /auth/admin.macaroon
     volumes:
-      - ./data:/app/data
-      - ../polar/auth:/auth:ro
+      - ${LNBITS_DOCKER_BASE}/data:/app/data
+      - ${POLAR_DOCKER_BASE}/auth:/auth:ro
     ports:
       - 5000:5000
     networks:

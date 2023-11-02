@@ -50,7 +50,7 @@ services:
       DATABASE_URL: postgresql://lawallet:lawallet@ledger-db/lawallet-extension
     entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma migrate deploy']
     volumes:
-      - ./prisma:/code/prisma
+      - ${LEDGER_DOCKER_BASE}/prisma:/code/prisma
     depends_on:
       ledger-db:
         condition: service_healthy
@@ -63,7 +63,7 @@ services:
       DATABASE_URL: postgresql://lawallet:lawallet@ledger-db/lawallet-extension
     entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma generate && npx --yes ts-node --esm -O {\"module\":\"es2020\"} prisma/seed.mts']
     volumes:
-      - ./prisma:/code/prisma
+      - ${LEDGER_DOCKER_BASE}/prisma:/code/prisma
     depends_on:
       ledger-db:
         condition: service_healthy
