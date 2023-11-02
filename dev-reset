@@ -12,9 +12,9 @@ fi
 
 HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)";
 
-rm "${HERE}/.env";
-rm "${HERE}/.seeded";
-rm "${HERE}/nostream/.nostr/settings.yaml";
+rm -f "${HERE}/.env";
+rm -f "${HERE}/.seeded";
+rm -f "${HERE}/nostream/.nostr/settings.yaml";
 rm -rf "${HERE}/lnbits/data";
 
 echo "Done."
