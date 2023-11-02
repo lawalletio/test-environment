@@ -1054,7 +1054,7 @@ limits:
       maxNegativeDelta: 180
     content:
       - description: 128 KB for allowed event kinds
-        maxLength: 131072 
+        maxLength: 131072
         kinds: [ 1112, 21111, 31111, 9735 ]
     rateLimits:
       - description: 0 events/min for allowed event kinds
