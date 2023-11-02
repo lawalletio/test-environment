@@ -1,0 +1,20 @@
+#! /usr/bin/env -S bash
+
+set -euo pipefail;
+shopt -qs huponexit;
+
+read -p "This will reset the development environment, are you sure? [y/N] " -n 1 -r;
+echo;
+if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+    echo "Cancelled."
+    exit;
+fi
+
+HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)";
+
+rm "${HERE}/.env";
+rm "${HERE}/.seeded";
+rm "${HERE}/nostream/.nostr/settings.yaml";
+rm -rf "${HERE}/lnbits/data";
+
+echo "Done."
