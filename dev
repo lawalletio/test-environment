@@ -44,7 +44,7 @@ if ! sudo -p 'We need to validate your sudo credentials, these will be used for 
 fi;
 echo "Credential validation successful, continuing.";
 
-while sleep 1; do sudo -v; done &
+while sleep 1; do sudo -n -v; done &
 
 #######################################################################################################################
 
@@ -129,8 +129,8 @@ HOSTS="$(mktemp --tmpdir lawallet-XXXXXXXX)";
     echo '127.0.0.1 lnbits.lawallet.ar';
     echo '127.0.0.1 relay.lawallet.ar';
 } > "${HOSTS}";
-sudo mount --bind "${HOSTS}" /etc/hosts;
-TRAPS=('sudo umount -f /etc/hosts' "${TRAPS[@]}");
+sudo -n -- mount --bind "${HOSTS}" /etc/hosts;
+TRAPS=('sudo -n -- umount -f /etc/hosts' "${TRAPS[@]}");
 
 #######################################################################################################################
 
