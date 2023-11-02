@@ -12,7 +12,7 @@ services:
       NODE_ENV: production
       NOSTR_RELAY: ws://nostream:8008
       PORT: 3000
-      GATEWAY_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
+      GATEWAY_PUBKEY: ${URLX_PUBLIC_KEY}
     depends_on:
       nostream:
         condition: service_healthy
