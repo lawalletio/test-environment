@@ -122,17 +122,15 @@ fi;
 
 #######################################################################################################################
 
-HOSTS="${TMPDIR:-/tmp}/lawallet-$(cat /dev/urandom | tr -cd 0-9a-zA-Z | head -c14)";
-{
-    cat /etc/hosts;
-    echo '';
-    echo '### LaWallet ###';
-    echo '127.0.0.1 api.lawallet.ar';
-    echo '127.0.0.1 lnbits.lawallet.ar';
-    echo '127.0.0.1 relay.lawallet.ar';
-} > "${HOSTS}";
-sudo -n -- mount --bind "${HOSTS}" /etc/hosts;
-TRAPS="sudo -n -- umount -f /etc/hosts; ${TRAPS}";
+: "${TMPDIR:=/tmp}";
+HOSTS_BU="${TMPDIR%/}/lawallet-$(cat /dev/urandom | tr -cd 0-9a-zA-Z | head -c14)";
+sudo -n -- cp /etc/hosts "${HOSTS_BU}";
+sudo -n -- sh -c 'echo ""                             >> /etc/hosts';
+sudo -n -- sh -c 'echo "### LaWallet ###"             >> /etc/hosts';
+sudo -n -- sh -c 'echo "127.0.0.1 api.lawallet.ar"    >> /etc/hosts';
+sudo -n -- sh -c 'echo "127.0.0.1 lnbits.lawallet.ar" >> /etc/hosts';
+sudo -n -- sh -c 'echo "127.0.0.1 relay.lawallet.ar"  >> /etc/hosts';
+TRAPS="sudo -n -- sh -c 'mv -f \"${HOSTS_BU}\" /etc/hosts'; ${TRAPS}";
 
 #######################################################################################################################
 
