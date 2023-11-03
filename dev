@@ -2,6 +2,8 @@
 
 set -eu;
 
+export LC_ALL=C;
+
 TRAPS=':';
 trap 'exit' INT HUP TERM
 trap 'eval "${TRAPS}";' EXIT;
