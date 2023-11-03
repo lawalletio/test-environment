@@ -2,9 +2,8 @@
 
 set -eu;
 
-echo -n "This will reset the development environment, are you sure? [y/N] "
+printf "This will reset the development environment, are you sure? [y/N] "
 IFS='' read -r REPLY;
-echo;
 if [ "${REPLY}" != 'y' ] && [ "${REPLY}" != 'Y' ]; then
     echo "Cancelled."
     exit;
