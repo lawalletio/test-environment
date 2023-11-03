@@ -83,6 +83,8 @@ fi;
 
 #######################################################################################################################
 
+TRAPS="docker compose stop; ${TRAPS}";
+
 if [ ! -f "${HERE}/.seeded" ]; then
     touch "${HERE}/.seeded";
     docker compose                              \
@@ -94,5 +96,3 @@ else
         -f "${HERE}/docker-compose.yaml"        \
         up;
 fi;
-
-docker compose stop

@@ -136,6 +136,8 @@ TRAPS="sudo -n -- umount -f /etc/hosts; ${TRAPS}";
 
 #######################################################################################################################
 
+TRAPS="docker compose stop; ${TRAPS}";
+
 if [ ! -f "${HERE}/.seeded" ]; then
     touch "${HERE}/.seeded";
     docker compose                              \
@@ -151,5 +153,3 @@ else
         -f "${HERE}/proxy/docker-compose.yaml"  \
         up;
 fi;
-
-docker compose stop
