@@ -151,6 +151,3 @@ else
         up;
 fi;
 
-#
-# mkcert -install               <--- esto lo tiene que hacer al instalar... capaz se puede poner aca de una
-#
