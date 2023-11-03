@@ -1,11 +1,10 @@
-#! /usr/bin/env -S bash
+#! /usr/bin/env -S sh
 
-set -euo pipefail;
-shopt -qs huponexit;
+set -eu;
 
 #######################################################################################################################
 
-HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)";
+HERE="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)";
 
 export API_GATEWAY_DOCKER_BASE="${HERE}/api-gateway";
 export CARD_DOCKER_BASE="${HERE}/card";
@@ -21,17 +20,17 @@ generate_secret() {
 }
 
 generate_key_pair() {
-    key_data="$(openssl ec -in <(openssl ecparam -name secp256k1 -genkey) -text -noout -conv_form=compressed 2> /dev/null | grep '^ ')";
+    key_data="$(openssl ecparam -name secp256k1 -genkey | openssl ec -text -noout -conv_form=compressed 2> /dev/null | grep '^ ')";
 
-    priv_key="$(head -n3 <(echo "${key_data}") | tr -cd 0123456789abcdef)";
-    pub_key="$(tail -n3 <(echo "${key_data}") | tr -cd 0123456789abcdef | tail -c+3)";
+    priv_key="$(echo "${key_data}" | head -n3 | tr -cd 0123456789abcdef)";
+    pub_key="$(echo "${key_data}" | tail -n3 | tr -cd 0123456789abcdef | tail -c+3)";
 
     echo "${priv_key}:${pub_key}";
 }
 
 #######################################################################################################################
 
-if [[ ! -f "${HERE}/.env" ]]; then
+if [ ! -f "${HERE}/.env" ]; then
     cp "${HERE}/.env.example.dev" "${HERE}/.env";
 else
     echo ".env file found, skipping.";
@@ -68,7 +67,7 @@ sed -i -e "s/CARD_PUBLIC_KEY=''/CARD_PUBLIC_KEY='${card_pub_key}'/g" "${HERE}/.e
 
 #######################################################################################################################
 
-if [[ ! -f "${HERE}/nostream/.nostr/settings.yaml" ]]; then
+if [ ! -f "${HERE}/nostream/.nostr/settings.yaml" ]; then
     cp "${HERE}/nostream/.nostr/settings.example.yaml" "${HERE}/nostream/.nostr/settings.yaml";
 else
     echo "nostream/.nostr/settings.yaml file found, skipping.";
@@ -82,7 +81,7 @@ fi;
 
 #######################################################################################################################
 
-if [[ ! -f "${HERE}/.seeded" ]]; then
+if [ ! -f "${HERE}/.seeded" ]; then
     touch "${HERE}/.seeded";
     docker compose                              \
         --profile seed                          \
@@ -93,3 +92,5 @@ else
         -f "${HERE}/docker-compose.yaml"        \
         up;
 fi;
+
+docker compose stop

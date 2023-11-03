@@ -1,16 +1,16 @@
-#! /usr/bin/env -S bash
+#! /usr/bin/env -S sh
 
-set -euo pipefail;
-shopt -qs huponexit;
+set -eu;
 
-read -p "This will reset the development environment, are you sure? [y/N] " -n 1 -r;
+echo -n "This will reset the development environment, are you sure? [y/N] "
+IFS='' read -r REPLY;
 echo;
-if [[ ! "${REPLY}" =~ ^[Yy]$ ]]; then
+if [ "${REPLY}" != 'y' ] && [ "${REPLY}" != 'Y' ]; then
     echo "Cancelled."
     exit;
 fi
 
-HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)";
+HERE="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)";
 
 rm -f "${HERE}/.env";
 rm -f "${HERE}/.seeded";
