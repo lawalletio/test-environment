@@ -49,7 +49,7 @@ services:
       retries: 5
       start_period: 360s
     networks:
-      - default
+      default:
   nostream-db:
     image: postgres
     container_name: nostream-db
@@ -102,7 +102,7 @@ services:
       nostream-db:
         condition: service_healthy
     networks:
-      - default
+      default:
 
 volumes:
   nostream-cache:
