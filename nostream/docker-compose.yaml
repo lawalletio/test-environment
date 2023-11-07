@@ -3,6 +3,7 @@ services:
     image: lawallet/nostream
     container_name: nostream
     environment:
+      DEBUG: '*'
       RELAY_PORT: 8008
       # Master
       NOSTR_CONFIG_DIR: /home/node/.nostr
