@@ -1,0 +1,26 @@
+#! /usr/bin/env -S sh
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+	echo "restore_backup: Restore a backup for lawallet persistent volumes";
+	echo "Usage:";
+	echo "\t./restore_backup CONTAINER_NAME BACKUP_FILE_PATH"
+	echo "Example:";
+	echo "\t./restore_backup card-db /home/lawallet/backups/123456789_card-db.tar.gz"
+	exit 1;
+fi;
+
+container_name="$1";
+backup_path="$2";
+backup_dir="$(dirname ${backup_path})";
+backup_filename="$(basename ${backup_path})";
+
+echo "Stopping ${container_name}";
+docker stop ${container_name};
+echo "Restoring backup from ${backup_path}";
+docker run 								\
+	--rm 								\
+	--volumes-from ${container_name}	\
+   	-v ${backup_dir}:/backups 		\
+   	ubuntu 								\
+   	bash -c "cd / && tar xzf /backups/${backup_filename}";
+echo "Backup restored, you may restart the container manually";

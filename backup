@@ -1,0 +1,34 @@
+#! /usr/bin/env -S sh
+
+if [ -z "$1" ]; then
+	echo "backup: Create backups for lawallet persistent volumes";
+	echo "Usage:";
+	echo "\t./backup BACKUP_DIRECTORY"
+	echo "Example:";
+	echo "\t./backup /home/lawallet/backups"
+	exit 1;
+fi;
+
+backup_dir="$1"
+current_time="$(date +%Y%m%d%H%M%S)";
+
+backup() {
+	container_name="$1";
+	from_path="$2";
+
+	echo "Backing up ${container_name}";
+	backup_filename="${current_time}_${container_name}.tar.gz"
+	docker run 								\
+		--rm								\
+		--volumes-from ${container_name} 	\
+		-v ${backup_dir}:/backups 			\
+		ubuntu								\
+		tar czf /backups/${backup_filename} ${from_path};
+	echo "Done, you can find it in ${backup_dir}/${backup_filename}";
+}
+
+backup "nostream-db" "/var/lib/postgresql/data";
+backup "ledger-db" "/var/lib/postgresql/data";
+backup "card-db" "/var/lib/postgresql/data";
+backup "nostream-cache" "/data";
+backup "urlx-cache" "/data";
