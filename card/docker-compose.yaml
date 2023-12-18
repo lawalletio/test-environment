@@ -3,10 +3,9 @@ services:
   card:
     build: https://github.com/lawalletio/card.git
     image: lawallet/card
-    container_name: card
     restart: always
     ports:
-      - 3001:3000
+      - ${CARD_PORTS}
     environment:
       MODULE_NAME: card
       DEBUG: ndk:*,card:*
@@ -41,7 +40,6 @@ services:
         condition: service_healthy
   card-db:
     image: postgres:15
-    container_name: card-db
     restart: always
     environment:
       MODULE_NAME: card
@@ -59,7 +57,6 @@ services:
       start_period: 360s
   card-migrate:
     image: node:18-alpine3.16
-    container_name: card-migrate
     environment:
       DATABASE_URL: postgresql://lawallet:lawallet@card-db/lawallet-extension
     entrypoint: [ 'sh', '-c', 'cd code && npm install --no-save --quiet prisma@5.2.0 && npx prisma migrate deploy']
@@ -70,7 +67,6 @@ services:
         condition: service_healthy
   card-seed:
     image: node:18-alpine3.16
-    container_name: card-seed
     profiles:
       - seed
     environment:

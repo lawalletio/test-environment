@@ -15,7 +15,6 @@ HERE="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)";
 export API_GATEWAY_DOCKER_BASE="${HERE}/api-gateway";
 export CARD_DOCKER_BASE="${HERE}/card";
 export LEDGER_DOCKER_BASE="${HERE}/ledger";
-export LNBITS_DOCKER_BASE="${HERE}/lnbits";
 export MONITOR_DOCKER_BASE="${HERE}/monitor";
 export NOSTREAM_DOCKER_BASE="${HERE}/nostream";
 export POLAR_DOCKER_BASE="${HERE}/polar";
@@ -58,7 +57,6 @@ fi;
 
 COMPOSE_PARALLEL_LIMIT=1 docker compose     \
     -f "${HERE}/docker-compose.yaml"        \
-    -f "${HERE}/lnbits/docker-compose.yaml" \
     -f "${HERE}/proxy/docker-compose.yaml"  \
     build;
 
@@ -95,14 +93,6 @@ fi;
 
 #######################################################################################################################
 
-if [ ! -f "${HERE}/lnbits/data" ]; then
-    cp -r "${HERE}/lnbits/data.example" "${HERE}/lnbits/data";
-else
-    echo "lnbits/data already exists, skipping.";
-fi;
-
-#######################################################################################################################
-
 polar_container='polar-n1-alice';
 
 if ! docker ps --format '{{.Names}}' | grep -q "${polar_container}"; then
@@ -128,7 +118,6 @@ sudo -n -- cp /etc/hosts "${HOSTS_BU}";
 sudo -n -- sh -c 'echo ""                             >> /etc/hosts';
 sudo -n -- sh -c 'echo "### LaWallet ###"             >> /etc/hosts';
 sudo -n -- sh -c 'echo "127.0.0.1 api.lawallet.ar"    >> /etc/hosts';
-sudo -n -- sh -c 'echo "127.0.0.1 lnbits.lawallet.ar" >> /etc/hosts';
 sudo -n -- sh -c 'echo "127.0.0.1 relay.lawallet.ar"  >> /etc/hosts';
 TRAPS="sudo -n -- sh -c 'mv -f \"${HOSTS_BU}\" /etc/hosts'; ${TRAPS}";
 
@@ -141,13 +130,11 @@ if [ ! -f "${HERE}/.seeded" ]; then
     docker compose                              \
         --profile seed                          \
         -f "${HERE}/docker-compose.yaml"        \
-        -f "${HERE}/lnbits/docker-compose.yaml" \
         -f "${HERE}/proxy/docker-compose.yaml"  \
         up;
 else
     docker compose                              \
         -f "${HERE}/docker-compose.yaml"        \
-        -f "${HERE}/lnbits/docker-compose.yaml" \
         -f "${HERE}/proxy/docker-compose.yaml"  \
         up;
 fi;

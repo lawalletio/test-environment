@@ -3,10 +3,9 @@ services:
   api-gateway:
     build: https://github.com/lawalletio/api-gateway.git
     image: lawallet/api-gateway
-    container_name: api-gateway
     restart: always
     ports:
-      - 3000:3000
+      - ${API_GATEWAY_PORTS}
     healthcheck:
       test: ["CMD-SHELL", "wget http://localhost:3000/health -q -O - > /dev/null"]
       interval: 5s

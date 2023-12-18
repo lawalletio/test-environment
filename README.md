@@ -15,7 +15,6 @@ Included lawallet modules:
 Development environments can be easily set up, including the aforementioned lawallet modules, alongside:
 
 - [nostream](https://github.com/Cameri/nostream)
-- [LNBits](https://lnbits.com)
 - [NGINX](https://nginx.org) SSL Proxy
 - [Polar](https://lightningpolar.com) Network
 
@@ -64,7 +63,7 @@ When you're done testing, you may stop all the instances with `Ctrl+C`, and dock
 
 ## Production
 
-Production environments are easily set up as well, but will spin up a reduced number of containers (since we do not wish to use the Polar Network, nor the SSL proxy, nor the local LNBits instance).
+Production environments are easily set up as well, but will spin up a reduced number of containers (since we do not wish to use the Polar Network, nor the SSL proxy).
 
 You're likely to want to change the following environment variables in `.env.example.prod`:
 
@@ -74,17 +73,9 @@ You're likely to want to change the following environment variables in `.env.exa
 
 Even if just for prod / dev separations purposes.
 
-Next, you'll need to access your LNBits instance and log into your desired support wallet, and complete the following environmental variables' values:
+Next, you'll need to access your LND and get the admin url which contains the cert and the macaroon. Then add it to the following env variable:
 
-- `LNBITS_ADMIN_KEY`
-- `LNBITS_INVOICE_READ_KEY`
-- `LNBITS_ENDPOINT`
-
-Now, you'll need to set up an `LNURLp` payment link and webhook, to do so:
-
-1. Instal and activate the `LNURLp` extension (see the [`LNURLp` Homepage](https://github.com/lnbits/lnurlp))
-2. set up a payment link with whatever limits you feel comfortable with, and set up a Webhook URL pointed to `https://{LAWALLET_BASE_URL}/invoice/settlement`.
-3. follow the generated link and extract the `cb` value, note this value down and complete the `LNURLP_URI` environmental variable with it.
+- `LNDCONNECT_URI`
 
 Finally, the following environmental variables will only be regenerated if empty:
 
@@ -93,4 +84,14 @@ Finally, the following environmental variables will only be regenerated if empty
 - `URLX_PRIVATE_KEY` / `URLX_PUBLIC_KEY`
 - `CARD_PRIVATE_KEY` / `CARD_PUBLIC_KEY`
 
-Finally, simply run `./prod` to start the production environment.
+Finally, simply run `./prod -b` to start the production environment. The `-b` flag is for building the images, this only needs to be done when you want to build the current images in the master branches of each repo.
+
+## Extra environments
+
+This project supports starting multiple stacks at the same time, all you need to to is provide the `-t tag` to the `./prod` script with the desired name. You can also override docker compose configuration by using the `docker-compose.override.yaml` file. Lets say you want to test a different version of the `urlx` module, all you need to do is writing the following:
+
+```yaml
+services:
+  urlx:
+    image: lawallet/urlx:my-feature
+```

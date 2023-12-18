@@ -1,7 +1,6 @@
 services:
   nostream:
     image: lawallet/nostream
-    container_name: nostream
     environment:
       DEBUG: '*'
       RELAY_PORT: 8008
@@ -33,7 +32,7 @@ services:
     volumes:
       - .nostr:/home/node/.nostr
     ports:
-      - 127.0.0.1:8008:8008
+      - ${NOSTREAM_PORTS}
     depends_on:
       nostream-cache:
         condition: service_healthy
@@ -52,7 +51,6 @@ services:
       default:
   nostream-db:
     image: postgres
-    container_name: nostream-db
     environment:
       POSTGRES_DB: nostr_ts_relay
       POSTGRES_USER: nostr_ts_relay
@@ -73,7 +71,6 @@ services:
       start_period: 360s
   nostream-cache:
     image: redis:7.0.5-alpine3.16
-    container_name: nostream-cache
     volumes:
       - nostream-cache:/data
     command: redis-server --loglevel warning --requirepass nostr_ts_relay
@@ -87,7 +84,6 @@ services:
       retries: 5
   nostream-migrate:
     image: node:18-alpine3.16
-    container_name: nostream-migrate
     environment:
       DB_HOST: nostream-db
       DB_PORT: 5432

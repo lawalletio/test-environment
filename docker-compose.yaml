@@ -8,5 +8,5 @@ include:
 
 networks:
   default:
-    name: lawallet
+    name: ${LW_PROJECT_NAME}
     external: true

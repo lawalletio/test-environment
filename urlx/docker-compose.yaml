@@ -3,10 +3,9 @@ services:
   urlx:
     build: https://github.com/lawalletio/urlx.git
     image: lawallet/urlx
-    container_name: urlx
     restart: always
     ports:
-      - 3002:3000
+      - ${URLX_PORTS}
     environment:
       MODULE_NAME: urlx
       DEBUG: ndk:*,urlx:*
@@ -18,10 +17,7 @@ services:
       NOSTR_PRIVATE_KEY: ${URLX_PRIVATE_KEY}
       NOSTR_PUBLIC_KEY: ${URLX_PUBLIC_KEY}
       LEDGER_PUBLIC_KEY: ${LEDGER_PUBLIC_KEY}
-      LNBITS_ADMIN_KEY: ${LNBITS_ADMIN_KEY}
-      LNBITS_INVOICE_READ_KEY: ${LNBITS_INVOICE_READ_KEY}
-      LNBITS_ENDPOINT: ${LNBITS_ENDPOINT}
-      LNURLP_URI: ${LNURLP_URI}
+      LNDCONNECT_URI: ${LNDCONNECT_URI}
     depends_on:
       urlx-cache:
         condition: service_started
@@ -29,10 +25,9 @@ services:
         condition: service_healthy
   urlx-cache:
     image: redis:7-alpine
-    container_name: urlx-cache
     restart: always
     ports:
-      - '6379:6379'
+      - ${URLX_CACHE_PORTS}
     command: redis-server --save 20 1
     volumes:
       - urlx-cache:/data
