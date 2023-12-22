@@ -32,7 +32,6 @@ done;
 
 export LW_PROJECT_NAME="${LW_PROJECT_NAME}";
 
-
 if [ ${t_flag} -eq 0 ]; then
     export API_GATEWAY_PORTS='3000:3000';
     export CARD_PORTS='3001:3000';
@@ -69,7 +68,7 @@ generate_secret() {
 }
 
 generate_key_pair() {
-    key_data="$(openssl ecparam -name secp256k1 -genkey | openssl ec -text -noout -conv_form=compressed 2> /dev/null | grep '^ ')";
+    key_data="$(openssl ecparam -name secp256k1 -genkey | openssl ec -text -noout -conv_form compressed 2> /dev/null | grep '^ ')";
 
     priv_key="$(echo "${key_data}" | head -n3 | tr -cd 0123456789abcdef)";
     pub_key="$(echo "${key_data}" | tail -n3 | tr -cd 0123456789abcdef | tail -c+3)";
@@ -79,28 +78,34 @@ generate_key_pair() {
 
 #######################################################################################################################
 
-if [ ! -f "${HERE}/.env" ]; then
-    cp "${HERE}/.env.example.dev" "${HERE}/.env";
+if [ ${t_flag} -eq 0 ]; then
+    env_file="${HERE}/.env";
+else
+    env_file="${HERE}/.env.${LW_PROJECT_NAME}";
+fi
+
+if [ ! -f "${env_file}" ]; then
+    cp "${HERE}/.env.example.dev" "${env_file}";
     nostream_secret="$(generate_secret)";
     sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" "${HERE}/.env";
 
     ledger_key_pair="$(generate_key_pair)";
     ledger_pub_key="${ledger_key_pair#*:}";
     ledger_priv_key="${ledger_key_pair%:*}";
-    sed -i -e "s/LEDGER_PRIVATE_KEY=''/LEDGER_PRIVATE_KEY='${ledger_priv_key}'/g" "${HERE}/.env";
-    sed -i -e "s/LEDGER_PUBLIC_KEY=''/LEDGER_PUBLIC_KEY='${ledger_pub_key}'/g" "${HERE}/.env";
+    sed -i -e "s/LEDGER_PRIVATE_KEY=''/LEDGER_PRIVATE_KEY='${ledger_priv_key}'/g" "${env_file}";
+    sed -i -e "s/LEDGER_PUBLIC_KEY=''/LEDGER_PUBLIC_KEY='${ledger_pub_key}'/g" "${env_file}";
 
     urlx_key_pair="$(generate_key_pair)";
     urlx_pub_key="${urlx_key_pair#*:}";
     urlx_priv_key="${urlx_key_pair%:*}";
-    sed -i -e "s/URLX_PRIVATE_KEY=''/URLX_PRIVATE_KEY='${urlx_priv_key}'/g" "${HERE}/.env";
-    sed -i -e "s/URLX_PUBLIC_KEY=''/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" "${HERE}/.env";
+    sed -i -e "s/URLX_PRIVATE_KEY=''/URLX_PRIVATE_KEY='${urlx_priv_key}'/g" "${env_file}";
+    sed -i -e "s/URLX_PUBLIC_KEY=''/URLX_PUBLIC_KEY='${urlx_pub_key}'/g" "${env_file}";
 
     card_key_pair="$(generate_key_pair)";
     card_pub_key="${card_key_pair#*:}";
     card_priv_key="${card_key_pair%:*}";
-    sed -i -e "s/CARD_PRIVATE_KEY=''/CARD_PRIVATE_KEY='${card_priv_key}'/g" "${HERE}/.env";
-    sed -i -e "s/CARD_PUBLIC_KEY=''/CARD_PUBLIC_KEY='${card_pub_key}'/g" "${HERE}/.env";
+    sed -i -e "s/CARD_PRIVATE_KEY=''/CARD_PRIVATE_KEY='${card_priv_key}'/g" "${env_file}";
+    sed -i -e "s/CARD_PUBLIC_KEY=''/CARD_PUBLIC_KEY='${card_pub_key}'/g" "${env_file}";
 else
     echo ".env file found, skipping.";
 fi;
@@ -133,17 +138,26 @@ fi;
 
 #######################################################################################################################
 
-if [ ! -f "${HERE}/.seeded" ]; then
-    touch "${HERE}/.seeded";
+if [ ${t_flag} -eq 0 ]; then
+    seed_file="${HERE}/.seeded";
+else
+    seed_file="${HERE}/.seeded.${LW_PROJECT_NAME}";
+fi
+
+if [ ! -f "${seed_file}" ]; then
+    touch "${seed_file}";
     docker compose                              \
         --profile seed                          \
-        --project-name "${LW_PROJECT_NAME}"            \
+        --project-name "${LW_PROJECT_NAME}"     \
+        --env-file "${env_file}"                \
         -f "${HERE}/docker-compose.yaml"        \
+        -f "${HERE}/docker-compose.override.yaml" \
         up -d;
 else
-    docker compose                              \
-        --project-name "${LW_PROJECT_NAME}"            \
-        -f "${HERE}/docker-compose.yaml"        \
-        -f "${HERE}/docker-compose.override.yaml"        \
+    docker compose                                   \
+        --project-name "${LW_PROJECT_NAME}"     \
+        --env-file "${env_file}"                     \
+        -f "${HERE}/docker-compose.yaml"             \
+        -f "${HERE}/docker-compose.override.yaml"    \
         up -d;
 fi;
