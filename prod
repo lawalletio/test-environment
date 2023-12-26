@@ -73,7 +73,7 @@ generate_key_pair() {
     priv_key="$(echo "${key_data}" | head -n3 | tr -cd 0123456789abcdef)";
     pub_key="$(echo "${key_data}" | tail -n3 | tr -cd 0123456789abcdef | tail -c+3)";
 
-    echo "${priv_key}:${pub_key}";
+    echo "${priv_key:(-64)}:${pub_key}";
 }
 
 #######################################################################################################################
