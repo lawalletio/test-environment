@@ -1,11 +1,25 @@
 #! /usr/bin/env -S sh
 
-if [ -z "$1" ] || [ -z "$2" ]; then
+
+print_usage() {
 	echo "restore_backup: Restore a backup for lawallet persistent volumes";
-	echo "Usage:";
-	echo "\t./restore_backup CONTAINER_NAME BACKUP_FILE_PATH"
+	echo "Usage: restore_backup [-h] [-t priject_name] CONTAINER_NAME BACKUP_FILE_PATH"
+    echo "\t-h: print this help message and exit";
 	echo "Example:";
 	echo "\t./restore_backup card-db /home/lawallet/backups/123456789_card-db.tar.gz"
+}
+
+while getopts "ht:" flag; do
+    case "${flag}" in
+        h) print_usage
+            exit 0;;
+        *) print_usage
+            exit 1;
+    esac
+done;
+
+if [ $(( $# - $OPTIND )) -lt 1 ]; then
+	print_usage
 	exit 1;
 fi;
 

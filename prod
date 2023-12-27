@@ -14,8 +14,9 @@ print_usage() {
     echo "\t-b: build images before creating containers";
     echo "\t-h: print this help message and exit";
     echo "\t-t project_name: name to use for the containers";
-    echo "Example:";
-    echo "\t./prod -t "
+    echo "Examples:";
+    echo "\t./prod"
+    echo "\t./prod -t tmp_env"
 }
 
 while getopts "bht:" flag; do
@@ -54,12 +55,30 @@ fi;
 
 HERE="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)";
 
-export API_GATEWAY_DOCKER_BASE="${HERE}/api-gateway";
-export CARD_DOCKER_BASE="${HERE}/card";
-export LEDGER_DOCKER_BASE="${HERE}/ledger";
-export MONITOR_DOCKER_BASE="${HERE}/monitor";
-export NOSTREAM_DOCKER_BASE="${HERE}/nostream";
-export URLX_DOCKER_BASE="${HERE}/urlx";
+config_dir="/.${LW_PROJECT_NAME}"
+
+cp_conf() {
+    from="$1"
+    to="$2"
+    if [ ! -d "${to}" ]; then
+        cp -r "${from}" /tmp/lawallet_tmp_dir && mv /tmp/lawallet_tmp_dir "${to}"
+    else
+        echo "Found config in ${to} not copying from template"
+    fi;
+}
+
+export API_GATEWAY_DOCKER_BASE="${HERE}/api-gateway${config_dir}";
+cp_conf "${HERE}/api-gateway" "${API_GATEWAY_DOCKER_BASE}"
+export CARD_DOCKER_BASE="${HERE}/card${config_dir}";
+cp_conf "${HERE}/card" "${CARD_DOCKER_BASE}"
+export LEDGER_DOCKER_BASE="${HERE}/ledger${config_dir}";
+cp_conf "${HERE}/ledger" "${LEDGER_DOCKER_BASE}"
+export MONITOR_DOCKER_BASE="${HERE}/monitor${config_dir}";
+cp_conf "${HERE}/monitor" "${MONITOR_DOCKER_BASE}"
+export NOSTREAM_DOCKER_BASE="${HERE}/nostream${config_dir}";
+cp_conf "${HERE}/nostream" "${NOSTREAM_DOCKER_BASE}"
+export URLX_DOCKER_BASE="${HERE}/urlx${config_dir}";
+cp_conf "${HERE}/urlx" "${URLX_DOCKER_BASE}"
 
 #######################################################################################################################
 
@@ -73,7 +92,7 @@ generate_key_pair() {
     priv_key="$(echo "${key_data}" | head -n3 | tr -cd 0123456789abcdef)";
     pub_key="$(echo "${key_data}" | tail -n3 | tr -cd 0123456789abcdef | tail -c+3)";
 
-    echo "${priv_key:(-64)}:${pub_key}";
+    echo "$(echo -n $priv_key | tail -c 64):${pub_key}";
 }
 
 #######################################################################################################################
@@ -87,7 +106,7 @@ fi
 if [ ! -f "${env_file}" ]; then
     cp "${HERE}/.env.example.dev" "${env_file}";
     nostream_secret="$(generate_secret)";
-    sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" "${HERE}/.env";
+    sed -i -e "s/NOSTREAM_SECRET=''/NOSTREAM_SECRET='${nostream_secret}'/g" "${env_file}";
 
     ledger_key_pair="$(generate_key_pair)";
     ledger_pub_key="${ledger_key_pair#*:}";
@@ -118,10 +137,10 @@ fi;
 
 #######################################################################################################################
 
-if [ ! -f "${HERE}/nostream/.nostr/settings.yaml" ]; then
-    cp "${HERE}/nostream/.nostr/settings.example.yaml" "${HERE}/nostream/.nostr/settings.yaml";
+if [ ! -f "${NOSTREAM_DOCKER_BASE}/.nostr/settings.yaml" ]; then
+    cp "${NOSTREAM_DOCKER_BASE}/.nostr/settings.example.yaml" "${NOSTREAM_DOCKER_BASE}/.nostr/settings.yaml";
 else
-    echo "nostream/.nostr/settings.yaml file found, skipping.";
+    echo "${NOSTREAM_DOCKER_BASE}/.nostr/settings.yaml file found, skipping.";
 fi;
 
 #######################################################################################################################

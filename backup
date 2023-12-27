@@ -1,19 +1,44 @@
 #! /usr/bin/env -S sh
 
-if [ -z "$1" ]; then
-	echo "backup: Create backups for lawallet persistent volumes";
-	echo "Usage:";
-	echo "\t./backup BACKUP_DIRECTORY"
-	echo "Example:";
-	echo "\t./backup /home/lawallet/backups"
-	exit 1;
-fi;
+t_flag=0
+LW_PROJECT_NAME=''
 
+print_usage() {
+	echo "backup: Create backups for lawallet persistent volumes";
+	echo "Usage: backup [-h] [-t project_name] BACKUP_DIRECTORY"
+    echo "\t-h: print this help message and exit";
+    echo "\t-t project_name: name to prepend to container names";
+	echo "Examples:";
+	echo "\t./backup /home/lawallet/backups"
+	echo "\t./backup -t tmp_env /home/lawallet/tmp_env_backups"
+}
+
+while getopts "ht:" flag; do
+    case "${flag}" in
+        h) print_usage
+            exit 0;;
+        t)  t_flag=1
+            LW_PROJECT_NAME="${OPTARG}";;
+        *) print_usage
+            exit 1;
+    esac
+done;
+
+if [ $(( $# - $OPTIND )) -lt 0 ]; then
+	print_usage
+    exit 1;
+fi
+
+shift $(($OPTIND - 1))
 backup_dir="$1"
 current_time="$(date +%Y%m%d%H%M%S)";
 
 backup() {
-	container_name="$1";
+	if [ ${t_flag} -eq 0 ]; then
+		container_name=$1;
+	else
+		container_name="${LW_PROJECT_NAME}-$1-1";
+	fi;
 	from_path="$2";
 
 	echo "Backing up ${container_name}";

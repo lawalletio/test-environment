@@ -30,7 +30,7 @@ services:
       SECRET: ${NOSTREAM_SECRET}
     user: node:node
     volumes:
-      - .nostr:/home/node/.nostr
+      - ${NOSTREAM_DOCKER_BASE}/.nostr:/home/node/.nostr
     ports:
       - ${NOSTREAM_PORTS}
     depends_on:
@@ -56,8 +56,6 @@ services:
       POSTGRES_USER: nostr_ts_relay
       POSTGRES_PASSWORD: nostr_ts_relay
     volumes:
-      - ${NOSTREAM_DOCKER_BASE}/.nostr/data:/var/lib/postgresql/data
-      - ${NOSTREAM_DOCKER_BASE}/.nostr/db-logs:/var/log/postgresql
       - ${NOSTREAM_DOCKER_BASE}/postgresql.conf:/postgresql.conf:ro
     networks:
       default:
