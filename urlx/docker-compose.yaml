@@ -21,6 +21,7 @@ services:
       NODE_PUBKEY: ${NODE_PUBKEY}
       ACCEPTED_BASE_FEE: ${ACCEPTED_BASE_FEE}
       ACCEPTED_FEE_PERCENT: ${ACCEPTED_FEE_PERCENT}
+      BASE_URL: ${BASE_URL}
     depends_on:
       urlx-cache:
         condition: service_started
